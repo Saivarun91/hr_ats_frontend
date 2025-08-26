@@ -29,8 +29,7 @@ export default function CompanyAdminDashboard() {
     } finally {
       setLoading(false);
     }
-    }
-  };
+    };
 
   const fetchCompanyResumes = async () => {
     if (!user?.company_id) return;
