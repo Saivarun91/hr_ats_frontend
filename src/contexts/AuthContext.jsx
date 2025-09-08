@@ -23,13 +23,17 @@ export function AuthProvider({ children }) {
     const token = getCookie("token");
     const role = getCookie("role");
     const company_id = getCookie("company_id");
+    const id = getCookie("id");
     const hr_id = getCookie("hr_id");
-  
+    console.log("hr_id",hr_id);
+    console.log("id",id);
+    console.log("data.role",role);
     if (token && role) {
       setUser({
         token,
         role,
         company_id: company_id || null,
+        id: id || null,
         hr_id: hr_id || null,
       });
     }
@@ -40,13 +44,16 @@ export function AuthProvider({ children }) {
 
   const login = (data) => {
     const userData = {
+      
       token: data.token,
       role: data.role,
       company_id: data.user?.company_id,
-      hr_id: data.user?.id,
+      id: data.user?.id,
+      hr_id: data.role === "hr" ? data.user?.id : null,
       ...data.user
     };
-
+console.log("userData",userData);
+console.log("data.role",data.role);
     // Set cookies
     setCookie("token", data.token, 1);
     setCookie("role", data.role, 1);
@@ -54,9 +61,10 @@ export function AuthProvider({ children }) {
     if (data.user?.company_id) {
       setCookie("company_id", data.user.company_id, 1);
     }
+    console.log("data.role",data.role);
     
-    if (data.role === "hr") {
-      setCookie("hr_id", data.user.id, 1);
+    if (data.role === "hr" || data.role === "company_admin") {
+      setCookie("id", data.user.id, 1);
     }
 
     setUser(userData);
@@ -68,10 +76,10 @@ export function AuthProvider({ children }) {
     deleteCookie("token");
     deleteCookie("role");
     deleteCookie("company_id");
+    deleteCookie("id");
     deleteCookie("hr_id");
-    
     setUser(null);
-    router.push("/");
+   
   };
 
   // Role checking functions

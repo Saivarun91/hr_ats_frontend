@@ -44,13 +44,17 @@ export const api = {
   listCompanies: () => request("/company/list/"),
 
   // Analysis
-  analyze: ({ files, company_id}) => {
+  analyze: ({ files, company_id ,hr_id}) => {
     const form = new FormData();
     for (const f of files) form.append("resumes", f);
     form.append("company_id", company_id);
+    form.append("hr_id", hr_id);
 
     return request("/analysis/api/analysis/", { method: "POST", body: form, isForm: true });
   },
+  // Resume detail (by ID)
+getResumeById: (id) => request(`/analysis/resume/${id}/`),
+
 
   // Search
   searchBySkills: async (payload) => {
@@ -63,14 +67,14 @@ export const api = {
     }
   },
   
-  searchByJD: async ({ file, company_id }) => {
+  searchByJD: async ({ file, company_id}) => {
     try {
       const form = new FormData();
       form.append("jd", file);
       form.append("company_id", company_id);
       const response = await request("/search/by-jd/", { method: "POST", body: form, isForm: true });
       return response;
-    } catch (error) {
+    } catch (error) { 
       console.error("Search by JD error:", error);
       throw error;
     }
@@ -88,8 +92,28 @@ export const api = {
   // Get resumes by company (for Company Admin)
   getCompanyResumes: (company_id) => request(`/analysis/hr-resumes/?company_id=${company_id}`),
 
-  // Global search across all resumes
-  globalSearch: (payload) => request("/search/global/", { method: "POST", body: payload }),
+  globalSearchBySkills: async (skills, company_id) => {
+    const res = await fetch(`${API_BASE}/search/global-skills/`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ skills, company_id }),
+    });
+    if (!res.ok) throw new Error("Failed to search globally by skills");
+    return res.json();
+  },
+  
+  globalSearchByJD: async (file) => {
+    const formData = new FormData();
+    formData.append("jd", file);
+  
+    const res = await fetch(`${API_BASE}/search/global-jd/`, {  
+      method: "POST",
+      body: formData,
+    });
+    if (!res.ok) throw new Error("Failed to search globally by JD");
+    return res.json();
+  },
+  
 
   // Add HR user (Super Admin and Company Admin only)
   addHR: (payload) => request("/users/add-hr/", { method: "POST", body: payload }),

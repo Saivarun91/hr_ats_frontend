@@ -54,7 +54,7 @@ export default function SearchByJD() {
   };
 
   const submit = async () => {
-    if (!user?.company_id || !user?.hr_id) {
+    if (!user?.company_id || !user?.id) {
       setErr("Authentication required. Please login again.");
       return;
     }

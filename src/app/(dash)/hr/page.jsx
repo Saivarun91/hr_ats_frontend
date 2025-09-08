@@ -95,8 +95,8 @@ export default function HRDashboard(){
           {/* Header Section */}
           <div className="mb-8 flex justify-between items-center">
             <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">HR Dashboard</h1>
-              <p className="text-gray-600">Welcome back, {user?.name || "HR Manager"}. Here's what's happening today.</p>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">TA Dashboard</h1>
+              <p className="text-gray-600">Welcome back, {user?.name || "TA Manager"}. Here's what's happening today.</p>
             </div>
             <div className="flex items-center space-x-4">
               <div className="hidden md:flex items-center space-x-2 bg-white py-2 px-4 rounded-lg shadow-sm">
@@ -191,8 +191,8 @@ export default function HRDashboard(){
                     <span className="font-mono text-gray-900">{user?.company_id || "CMP-12945"}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span>HR ID:</span>
-                    <span className="font-mono text-gray-900">{user?.hr_id || "HR-4826"}</span>
+                    <span>TA ID:</span>
+                    <span className="font-mono text-gray-900">{user?.id || "HR-4826"}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Plan:</span>

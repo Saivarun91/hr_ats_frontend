@@ -14,8 +14,7 @@ export default function CreateCompany() {
     email: "",
     website: "",
     number_of_employees: "",
-    company_code: "",
-    company_password: ""
+    password_hash: ""
   });
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -32,6 +31,7 @@ export default function CreateCompany() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log(formData)
     setLoading(true);
     setError("");
     setSuccess("");
@@ -49,9 +49,9 @@ export default function CreateCompany() {
         email: "",
         website: "",
         number_of_employees: "",
-        company_code: "",
-        company_password: ""
+        password_hash: ""
       });
+
 
       // Redirect after 2 seconds
       setTimeout(() => {
@@ -205,7 +205,7 @@ export default function CreateCompany() {
                   />
                 </div>
 
-                <div>
+                {/* <div>
                   <label htmlFor="company_code" className="block text-sm font-medium text-gray-700 mb-2">
                     Company Code *
                   </label>
@@ -219,18 +219,18 @@ export default function CreateCompany() {
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                     placeholder="e.g., TECH001"
                   />
-                </div>
+                </div> */}
 
                 <div>
-                  <label htmlFor="company_password" className="block text-sm font-medium text-gray-700 mb-2">
+                  <label htmlFor="companypassword" className="block text-sm font-medium text-gray-700 mb-2">
                     Company Password *
                   </label>
                   <input
                     type="password"
-                    id="company_password"
-                    name="company_password"
+                    id="password_hash"
+                    name="password_hash"
                     required
-                    value={formData.company_password}
+                    value={formData.password_hash}
                     onChange={handleChange}
                     className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-red-500 transition-colors"
                     placeholder="Enter company password"

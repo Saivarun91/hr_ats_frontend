@@ -18,15 +18,15 @@ export default function UploadAnalyze() {
   const [activeTab, setActiveTab] = useState("upload"); // "upload" or "myResumes"
 
   useEffect(() => {
-    if (user?.company_id && user?.hr_id) {
+    if (user?.company_id && user?.id) {
       fetchResumes();
     }
   }, [user]);
-
+  console.log("user",user?.id)
   const fetchResumes = async () => {
     try {
       setResumesLoading(true);
-      const data = await api.getHRResumes(user.company_id, user.hr_id);
+      const data = await api.getHRResumes(user.company_id, user.id);
       
       setResumes(data.resumes || []);
     } catch (e) {
@@ -37,7 +37,7 @@ export default function UploadAnalyze() {
   };
 
   const submit = async () => {
-    if (!user?.company_id || !user?.hr_id) {
+    if (!user?.company_id || !user?.id) {
       setErr("Authentication required. Please login again.");
       return;
     }
@@ -50,7 +50,7 @@ export default function UploadAnalyze() {
       const data = await api.analyze({ 
         files, 
         company_id: user.company_id, 
-        hr_id: user.hr_id 
+        hr_id: user.id 
       });
       
       // Now backend returns candidates with flat fields

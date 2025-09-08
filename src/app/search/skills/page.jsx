@@ -3,9 +3,11 @@ import { useState } from "react";
 import Protected from "@/components/Protected";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
 
 export default function SearchBySkills() {
   const { user } = useAuth();
+  console.log(user);
   const [skills, setSkills] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -13,7 +15,7 @@ export default function SearchBySkills() {
   const [searchPerformed, setSearchPerformed] = useState(false);
 
   const submit = async () => {
-    if (!user?.company_id || !user?.hr_id) {
+    if (!user?.company_id || !user?.id) {
       setErr("Authentication required. Please login again.");
       return;
     }
@@ -359,9 +361,12 @@ export default function SearchBySkills() {
                         
                         {/* Action Buttons */}
                         <div className="mt-4 flex space-x-2">
-                          <button className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg text-sm font-medium transition-colors">
-                            View Profile
-                          </button>
+                        <Link 
+                        href={`/search/skills/${candidate.id}`} 
+                        className="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View More
+                      </Link>
                           <button className="p-2 bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition-colors">
                             <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 12h.01M12 12h.01M19 12h.01M6 12a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0zm7 0a1 1 0 11-2 0 1 1 0 012 0z"></path>

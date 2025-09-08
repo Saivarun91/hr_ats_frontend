@@ -13,7 +13,7 @@ export default function HRResumes() {
   const [err, setErr] = useState("");
 
   useEffect(() => {
-    if (user?.company_id && user?.hr_id) {
+    if (user?.company_id) {
       fetchResumes();
     }
   }, [user]);
@@ -21,7 +21,7 @@ export default function HRResumes() {
   const fetchResumes = async () => {
     try {
       setLoading(true);
-      const data = await api.getHRResumes(user.company_id, user.hr_id);
+      const data = await api.getHRResumes(user.company_id);
       console.log(data.resumes);
       setResumes(data.resumes || []);
     } catch (e) {
@@ -258,6 +258,15 @@ export default function HRResumes() {
                       <p className="text-xs text-gray-500">
                         Uploaded: {resume.uploaded_at ? new Date(resume.uploaded_at).toLocaleDateString() : "Unknown"}
                       </p>
+                    </div>
+                    {/* View More */}
+                    <div className="mt-4 text-right">
+                      <Link 
+                        href={`/hr/resumes/${resume.id}`} 
+                        className="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        View More
+                      </Link>
                     </div>
                   </div>
                 </div>

@@ -1,42 +1,71 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Protected from "@/components/Protected";
 import { api } from "@/lib/api";
 import { useAuth } from "@/contexts/AuthContext";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function GlobalSearch() {
   const { user } = useAuth();
+  const router = useRouter();
   const [searchType, setSearchType] = useState("skills");
   const [searchQuery, setSearchQuery] = useState("");
   const [results, setResults] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [searchPerformed, setSearchPerformed] = useState(false);
+  const [credits, setCredits] = useState(null);
+  const [creditsLoading, setCreditsLoading] = useState(true);
+console.log(process.env.NEXT_PUBLIC_API_BASE);
+  useEffect(() => {
+    fetchCredits();
+  }, [user?.company_id]);
+
+  const fetchCredits = async () => {
+    if (!user?.company_id) return;
+    
+    try {
+      setCreditsLoading(true);
+      const response = await fetch(`${process.env.NEXT_PUBLIC_API_BASE}/payments/company/${user.company_id}/credits`);
+      console.log(response);
+      if (response.ok) {
+        const data = await response.json();
+        setCredits(data);
+        console.log(data);
+      }
+    } catch (error) {
+      console.error('Error fetching credits:', error);
+    } finally {
+      setCreditsLoading(false);
+    }
+  };
 
   const submit = async () => {
-    if (!user?.company_id) {
-      setErr("Authentication required. Please login again.");
-      return;
-    }
-
     if (!searchQuery.trim()) {
       setErr("Please enter a search query");
       return;
     }
-    
+  
     setErr("");
     setLoading(true);
     setResults([]);
     setSearchPerformed(false);
-    
+  
     try {
-      const payload = { 
-        search_type: searchType,
-        search_query: searchQuery,
-        company_id: user.company_id
-      };
-      
-      const data = await api.globalSearch(payload);
+      let data;
+      if (searchType === "skills") {
+        const skills = searchQuery
+          .split(",")
+          .map((s) => s.trim())
+          .filter(Boolean);
+        data = await api.globalSearchBySkills(skills, user.company_id);
+      } else {
+        // JD search expects a file upload; wrap plain text into a Blob
+        const file = new Blob([searchQuery], { type: "text/plain" });
+        file.name = "jd.txt";
+        data = await api.globalSearchByJD(file);
+      }
       setResults(data.results || []);
       setSearchPerformed(true);
     } catch (e) {
@@ -45,6 +74,45 @@ export default function GlobalSearch() {
       setLoading(false);
     }
   };
+  
+// inside GlobalSearch component
+
+const [expandedResumes, setExpandedResumes] = useState({}); // track opened resumes
+
+const handleViewMore = async (candidateId) => {
+  if (!credits || credits.remaining_credits <= 0) {
+    alert("Not enough credits. Please buy more to view full resume.");
+    return;
+  }
+
+  try {
+    // Deduct 1 credit
+    // const res = await fetch(
+    //   `${process.env.NEXT_PUBLIC_API_BASE}/payments/company/${user.company_id}/deduct-credit/`,
+    //   { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ candidateId }) }
+    // );
+
+    // if (!res.ok) throw new Error("Failed to deduct credit");
+
+    // Fetch full resume
+    // const resumeRes = await fetch(
+    //   `${process.env.NEXT_PUBLIC_API_BASE}/global/${candidateId}/`
+    // );
+    // if (!resumeRes.ok) throw new Error("Failed to fetch resume details");
+    // const resumeData = await resumeRes.json();
+
+
+    // Update expanded resumes state
+    // setExpandedResumes((prev) => ({ ...prev, [candidateId]: resumeData }));
+
+    // Refresh credits
+    // fetchCredits();
+    window.open(`/search/global/${candidateId}`, "_blank");
+
+  } catch (err) {
+    console.error("Error viewing resume:", err);
+  }
+};
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -79,6 +147,41 @@ export default function GlobalSearch() {
               Search across all resumes in your company using job descriptions or specific skills
             </p>
           </div>
+
+          {/* Credit Information Banner */}
+          {/* {!creditsLoading && credits && (
+            <div className="bg-gradient-to-r from-blue-50 to-indigo-100 border border-blue-200 rounded-2xl p-6 mb-8">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-semibold text-blue-900 mb-2">
+                    Credit Balance
+                  </h3>
+                  <p className="text-blue-700">
+                    You have <span className="font-bold text-xl">{credits.remaining_credits}</span> credits remaining
+                  </p>
+                  <p className="text-sm text-blue-600 mt-1">
+                    Each global resume view costs 1 credit. Company internal resumes are free.
+                  </p>
+                </div>
+                <div className="text-right">
+                  <div className="text-2xl font-bold text-blue-900">
+                    {credits.remaining_credits}
+                  </div>
+                  <div className="text-sm text-blue-600">Credits</div>
+                  {credits.remaining_credits <= 5 && (
+                    <div className="mt-2">
+                      <Link
+                        href="/company-admin/payment-plans"
+                        className="inline-flex items-center px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 transition-colors"
+                      >
+                        Buy More Credits
+                      </Link>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          )} */}
 
           {/* Search Form */}
           <div className="bg-white rounded-2xl shadow-xl p-8 mb-8">
@@ -320,6 +423,50 @@ export default function GlobalSearch() {
                             </p>
                           </div>
                         )}
+                        {/* View More Button */}
+                        <div className="mt-4 text-right">
+                        <button
+  onClick={() => handleViewMore(candidate.id)}
+  className="inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition-colors"
+>
+  View More
+</button>
+
+                    </div>
+
+{/* Expanded Resume */}
+{expandedResumes[candidate.id] && (
+  <div className="mt-4 p-4 bg-gray-50 rounded-lg space-y-3 text-sm">
+    <h4 className="font-semibold text-gray-800">Experience</h4>
+    {expandedResumes[candidate.id].experience?.map((exp, i) => (
+      <div key={i} className="border-b pb-2 mb-2">
+        <p className="font-medium">{exp.Title} @ {exp.Company}</p>
+        <p className="text-xs text-gray-600">{exp.Duration}</p>
+        <p>{exp.Description}</p>
+      </div>
+    ))}
+
+    <h4 className="font-semibold text-gray-800">Projects</h4>
+    {expandedResumes[candidate.id].projects?.map((proj, i) => (
+      <div key={i} className="border-b pb-2 mb-2">
+        <p className="font-medium">{proj.Title}</p>
+        <p>{proj.Description}</p>
+      </div>
+    ))}
+
+    {expandedResumes[candidate.id].certifications?.length > 0 && (
+      <>
+        <h4 className="font-semibold text-gray-800">Certifications</h4>
+        <ul className="list-disc pl-4">
+          {expandedResumes[candidate.id].certifications.map((c, i) => (
+            <li key={i}>{c}</li>
+          ))}
+        </ul>
+      </>
+    )}
+  </div>
+)}
+
                       </div>
                     </div>
                   ))}
