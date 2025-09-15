@@ -322,7 +322,7 @@ export default function ResumeDetail() {
           )} */}
 
           {/* Projects Section (shown in multiple tabs) */}
-          {resume.projects?.length > 0 && activeTab !== "scores" && (
+          {/* {resume.projects?.length > 0 && activeTab !== "scores" && (
             <section className="mt-8">
               <h2 className="text-xl font-semibold text-gray-800 mb-4 border-b pb-2">
                 Notable Projects
@@ -336,7 +336,7 @@ export default function ResumeDetail() {
                 ))}
               </div>
             </section>
-          )}
+          )} */}
         </div>
       </div>
     </Protected>
