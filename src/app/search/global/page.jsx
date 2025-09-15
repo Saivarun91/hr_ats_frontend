@@ -61,10 +61,8 @@ console.log(process.env.NEXT_PUBLIC_API_BASE);
           .filter(Boolean);
         data = await api.globalSearchBySkills(skills, user.company_id);
       } else {
-        // JD search expects a file upload; wrap plain text into a Blob
-        const file = new Blob([searchQuery], { type: "text/plain" });
-        file.name = "jd.txt";
-        data = await api.globalSearchByJD(file);
+        // JD search now accepts text directly
+        data = await api.globalSearchByJD(searchQuery, user.company_id);
       }
       setResults(data.results || []);
       setSearchPerformed(true);
@@ -330,12 +328,6 @@ const handleViewMore = async (candidateId) => {
                           </span>
                         </div>
 
-                        {/* Match Reason */}
-                        {candidate.reason && (
-                          <div className="mb-4 p-3 bg-blue-50 rounded-lg">
-                            <p className="text-sm text-blue-800">{candidate.reason}</p>
-                          </div>
-                        )}
 
                         {/* Skills Comparison for JD Search */}
                         {searchType === "jd" && candidate.jd_skills && candidate.candidate_skills && (

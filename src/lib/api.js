@@ -102,9 +102,10 @@ getResumeById: (id) => request(`/analysis/resume/${id}/`),
     return res.json();
   },
   
-  globalSearchByJD: async (file) => {
+  globalSearchByJD: async (jdText, company_id) => {
     const formData = new FormData();
-    formData.append("jd", file);
+    formData.append("jd_text", jdText);
+    formData.append("company_id", company_id);
   
     const res = await fetch(`${API_BASE}/search/global-jd/`, {  
       method: "POST",

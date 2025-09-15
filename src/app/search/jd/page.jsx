@@ -330,18 +330,18 @@ export default function SearchByJD() {
                           </div>
 
                           {/* Score Label */}
-                          <div className="mb-4">
+                          {/* <div className="mb-4">
                             <span className={`inline-block px-2 py-1 rounded-lg text-xs font-medium ${getScoreColor(candidate.match_score)}`}>
                               {getScoreLabel(candidate.match_score)}
                             </span>
-                          </div>
+                          </div> */}
 
                           {/* Match Reason */}
-                          {candidate.reason && (
+                          {/* {candidate.reason && (
                             <div className="mb-4 p-3 bg-blue-50 rounded-lg">
                               <p className="text-sm text-blue-800">{candidate.reason}</p>
                             </div>
-                          )}
+                          )} */}
 
                           {/* Skills Comparison */}
                           {candidate.jd_skills && candidate.candidate_skills && (
